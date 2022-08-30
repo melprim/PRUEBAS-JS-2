@@ -1,0 +1,240 @@
+
+//CREANDO CARRITO
+/*
+// Verificamos la cantidad de objetos en el carrito para la sesion actual.
+
+let carritoStorage = localStorage.getItem('Carrito');
+        if(carritoStorage == null) {
+            carritoStorage = [];
+            let mostrarCantidadProductosCarrito = document.getElementById("contadorCarrito")
+            mostrarCantidadProductosCarrito.innerHTML = `${carritos.length}`;
+        } else {
+            carrito = JSON.parse(carrito);
+            let mostrarCantidadProductosCarrito = document.getElementById("contadorCarrito")
+            mostrarCantidadProductosCarrito.innerHTML = `${carrito.length}`;
+        }
+
+//funcion Agregar Al Carrito. 
+//Se crea la key 'Carrito' en el LocalStorage y se agrega la cortina seleccionada. 
+//APLICO LIBRERIA
+function agregarAlCarrito(indice){
+    arrayCarrito.push(arrayCortinas[indice])
+    localStorage.setItem('Carrito', JSON.stringify(arrayCarrito))
+    //contadorCarrito.innerText=arrayCarrito.length
+    Toastify({
+        text: "Agregaste TU CORTINA al Carrito",
+        duration: 3000,
+        close: true,
+        gravity: "top", 
+        position: "right", 
+        stopOnFocus: true, 
+        style: {
+            background: "#2AC3A2", color: "black",
+        },
+        onClick: function(){
+        } 
+    }).showToast();
+    
+}
+
+
+
+//MUESTRO CARRITO 
+iconoCarrito.addEventListener('click', ()=>{
+    //let carritoStorage = JSON.parse(localStorage.getItem('Carrito')) 
+    /*let carritoStorage = localStorage.getItem('Carrito')
+    if(carritoStorage == null){
+         carritoStorage = [];
+    }else{
+        carritoStorage=JSON.parse(carritoStorage)
+    } */
+    if (arrayCarrito.length==0){
+        divCarrito.innerHTML=`<h2>Carrito Vacío</h2>`
+    }else{
+        mostrarCortinasCarrito(carritoStorage)
+    }
+    finalizarCompra(carritoStorage)
+})
+
+
+function mostrarCortinasCarrito(){
+    /*let carritoStorage = localStorage.getItem('Carrito')
+    if(carritoStorage == null){
+         carritoStorage = [];
+    }else{
+        carritoStorage=JSON.parse(carritoStorage)
+    } */
+    let carritoStorage = JSON.parse(localStorage.getItem('Carrito')) 
+    divCarrito.innerHTML= ""
+    arrayCarrito.forEach((cortina, indice) =>{
+        //IMAGENES DE LA CARD SEGUN EL TIPO DE CORTINA
+        let fotoCortina = " "
+        if(cortina.tipoCortina=="Roller"){
+            fotoCortina = Image.innerHTML=`<img class="w-100 mb-3" src="../imagenes/CORTINA ENROLLABLE 7.jpg">`  
+        }else if(cortina.tipoCortina=="Bandas Verticales"){
+            fotoCortina = Image.innerHTML=`<img class="w-100 mb-3" src="../imagenes/CORTINA VERTICAL 3.jpg">` 
+        }else{
+            fotoCortina = Image.innerHTML=`<img class="w-100 mb-3" src= "../imagenes/CORTINA ENROLLABLE DUO 4.jpg">` 
+        }
+        
+        divCarrito.innerHTML += `
+                <div class="productos row" id="cortinaCarrito${indice}">
+                    <div class="col-xl-6 col-md-12">
+                        <img class="fotosCard">${fotoCortina}</img>
+                    </div>
+                    <div class="col-xl-6 col-md-12">
+                        <h3>Cortina: ${cortina.tipoCortina}</h3>
+                        <p class="my-0">Tipo de Tela: ${cortina.tipoTela}</p>
+                        <p class="my-0">Ancho: ${cortina.ancho}cm</p>
+                        <p class="my-0">Alto: ${cortina.alto}cm</p>
+                        
+                        <p class="my-o">Cantidad: <input style="width: 30px" type="number" value="1"></p>
+                        <h4>Costo: $${cortina.presupuesto}</h4>
+                        <button class="btn btn-secondary" id="sumar${indice}">+</button>
+                        <button class="btn btn-secondary" id="restar${indice}">-</button>
+                        <button class="btn btn-danger my-1"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                </div>             
+        `
+    })
+    costoTotalCarrito(carritoStorage)
+    eliminarCortinaCarrito(carritoStorage)
+    vaciarCarrito(carritoStorage)
+}
+
+
+function eliminarCortinaCarrito (carritoStorage){
+    carritoStorage.forEach((cortina, indice)=>{
+        const botonEliminarDelCarrito = document.getElementById(`cortinaCarrito${indice}`).lastElementChild.lastElementChild
+        botonEliminarDelCarrito.addEventListener('click', () => {
+            document.getElementById(`cortinaCarrito${indice}`).remove()
+            arrayCarrito.splice(indice, 1)  
+            localStorage.setItem('Carrito', JSON.stringify(arrayCarrito)) 
+            costoTotalCarrito() 
+            //contadorCarrito.innerText=arrayCarrito.length
+        })
+    })
+}
+
+function vaciarCarrito (carritoStorage){
+    carritoStorage.forEach((cortina, indice)=>{
+        vaciarElCarrito.addEventListener('click', () => {
+            document.getElementById(`cortinaCarrito${indice}`).remove()
+            arrayCarrito.splice(0, arrayCarrito.length)
+            localStorage.setItem('Carrito', JSON.stringify(arrayCarrito))
+            costoTotalCarrito()
+            if (arrayCarrito.length==0){
+                divCarrito.innerHTML=`<h2>Carrito Vacío</h2>`
+            }
+           // contadorCarrito.innerText=arrayCarrito.length
+        })
+    })
+}
+
+function finalizarCompra (carritoStorage){
+    finalizarLaCompra.addEventListener('click', () => {
+        if (arrayCarrito.length==0){
+            Swal.fire('No es posible realizar esta operación. Tu carrito esta vacío')
+        }else{
+            Swal.fire({
+                title: '¿Desea Finalizar la compra?',
+                showCancelButton: true,
+                cancelButtonText: 'Seguir comprando',
+                confirmButtonText: 'Finalizar compra',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    carritoStorage.forEach((cortina, indice) =>{
+                        document.getElementById(`cortinaCarrito${indice}`).remove()
+                        arrayCarrito.splice(0, arrayCarrito.length)
+                        localStorage.setItem('Carrito', JSON.stringify(arrayCarrito))
+                        costoTotalCarrito()
+                        //contadorCarrito.innerText=arrayCarrito.length
+                    })
+                    Swal.fire('Compra finalizada', '', 'success')
+                }    
+            })
+        }
+    })
+}
+
+
+//FUNCION COSTO TOTAL DEL CARRITO - AUN EN PROCESO
+function costoTotalCarrito(){
+    const costoTotal = document.getElementById('idCostoTotal')
+    let total = 0;
+    arrayCarrito.forEach(cortina => {
+        total += cortina.presupuesto 
+    })
+    costoTotal.innerHTML = total
+}
+
+
+//INCORPORO FETCH DE MANERA LOCAL - Cree un archivo .json con productos en promoción.
+const cortinaPromo = document.getElementById('idCortinaPromo')
+const botonPromo = document.getElementById('idBotonPromo')
+
+async function mostrarCortinasEnPromo(){
+    const promociones = await fetch('../json/productosPromo.json')
+    const promocionesParseadas = await promociones.json()
+
+        cortinaPromo.innerHTML = ' '
+    promocionesParseadas.forEach((cortina, indice)=>{
+        cortinaPromo.innerHTML += `
+            <div class="card" style="width: 350px;" id="cortina${indice}">
+                <img src="../imagenes/${cortina.img}" class="card-img-top pt-3" style="height: 350px">
+                <div class="card-body">
+                    <h3 class="card-title">Cortina: ${cortina.tipoCortina}</h3>
+                    <p class="card-text my-0">Tipo de Tela: ${cortina.tipoTela}</p>
+                    <p class="card-text my-0">Color: ${cortina.color}</p>
+                    <p class="card-text my-0">Mecanismo: ${cortina.mecanismo}</p>
+                    <p class="card-text my-0">Ancho: ${cortina.ancho}cm</p>
+                    <p class="card-text my-0">Alto: ${cortina.alto}cm</p>
+                    <h4>Costo: $${cortina.presupuesto}</h4>
+                    <buton class="btn btn-success my-1" onclick="agregarPromoAlCarrito(${indice})">Agregar al Carrito</buton>
+                </div>
+            </div>
+        `
+    })
+}
+
+botonPromo.addEventListener('click', ()=>{
+    mostrarCortinasEnPromo()
+})
+
+async function agregarPromoAlCarrito(indice){
+    const promociones = await fetch('../json/productosPromo.json')
+    const promocionesParseadas = await promociones.json()
+    arrayCarrito.push(promocionesParseadas[indice])
+    localStorage.setItem('Carrito', JSON.stringify(arrayCarrito))
+    contadorCarrito.innerText=arrayCarrito.length
+    Toastify({
+        text: "Agregaste LA CORTINA al Carrito",
+        duration: 3000,
+        close: true,
+        gravity: "top", 
+        position: "right", 
+        stopOnFocus: true, 
+        style: {
+            background: "#2AC3A2", color: "black",
+        },
+        onClick: function(){
+        } 
+    }).showToast();
+}*/
+
+//INTENTOS -NO FINALIZADOS-
+/*
+function sumarCantidad(carritoStorage){
+    const sumar = document.getElementById(`sumar${indice}`)
+    cantidad = 1
+    carritoStorage.forEach(cortina =>{
+        sumar.addEventListener('click', () =>{
+            cantidad = cortina.cantidad++
+            localStorage.setItem('Carrito', JSON.stringify(arrayCarrito))
+        })
+    })
+}*/
+
+/*divCarrito.innerHTML += `
+<h5>CARRITO VACIO</h5>
+`*/
