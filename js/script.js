@@ -23,8 +23,8 @@ const iva = 1.21
 let cortinasTotales = 0
 
 //ARRAY
-const arrayCortinas = [];
-const arrayCarrito = [];
+let arrayCortinas = [];
+let arrayCarrito = [];
 
 //CONSULTO SI EXISTE EL LOCALSTORAGE - aplico OPERADOR TERNARIO
 let arrayStorage
@@ -42,18 +42,6 @@ if(JSON.parse(localStorage.getItem('Carrito'))){
     localStorage.setItem('Carrito', JSON.stringify([]))
     carritoStorage = JSON.parse(localStorage.getItem('Carrito'))
 }
- /*
-document.addEventListener('DOMContentLoaded', () => {
-    if (sessionStorage.getItem('Cortina')){
-        arrayStorage = JSON.parse(sessionStorage.getItem('Cortina'))
-        mostrarInfo()
-    }
-})*/
-
-//(localStorage.getItem('Carrito')) ? arrayStorage = JSON.parse(localStorage.getItem('Carrito')) : localStorage.setItem('Carrito', JSON.stringify(arrayCarrito))
-
-//(sessionStorage.getItem('Cortinas')) ? arrayStorage = JSON.parse(sessionStorage.getItem('Cortinas')) : sessionStorage.setItem('Cortinas', JSON.stringify(arrayCortinas))
-
 
 //CONSULTO DOM POR ID
 const form = document.getElementById('idForm')
@@ -63,6 +51,9 @@ const iconoCarrito = document.getElementById('idCarrito')
 const divCarrito = document.getElementById('divCarrito')
 const vaciarElCarrito = document.getElementById('vaciarCarrito')
 const finalizarLaCompra = document.getElementById('finalizarCompra')
+const costoTotal = document.getElementById('idCostoTotal')
+const cortinaPromo = document.getElementById('idCortinaPromo')
+const botonPromo = document.getElementById('idBotonPromo')
 
 
 //EVENTO DEL FORM
@@ -83,6 +74,7 @@ form.addEventListener('submit', (e)=>{
 
 
     //Creo objetos y agrego al array
+    arrayCortinas=JSON.parse(sessionStorage.getItem('Cortinas'))
     const productoCortina = new Cortina(tipoCortina, tipoTela, color, mecanismo, ancho, alto)
     arrayCortinas.push(productoCortina)
 
@@ -100,7 +92,7 @@ const mostrarInfo = (cortina) => {
     let arrayStorage = JSON.parse(sessionStorage.getItem('Cortinas'))
     divProductoCortina.innerHTML= "";
     arrayStorage.forEach((cortina, indice)=>{
-
+        
         //IMAGENES DE LA CARD SEGUN EL TIPO DE CORTINA
         let fotoCortina = " "
         if(cortina.tipoCortina=="Roller"){
@@ -139,7 +131,7 @@ const mostrarInfo = (cortina) => {
 
 //FUNCION ELIMINAR CORTINA DE LA LISTA DE CORTINAS ARMADAS
 function eliminarCortinaArmada () {
-    //let arrayStorage = JSON.parse(sessionStorage.getItem('Cortinas'))
+    let arrayCortinas = JSON.parse(sessionStorage.getItem('Cortinas'))
     arrayCortinas.forEach((cortina, indice)=>{
     const botonEliminar = document.getElementById(`producto${indice}`).lastElementChild.lastElementChild
         botonEliminar.addEventListener('click', () => {
@@ -221,6 +213,7 @@ function traerNumero(){
 //FUNCION AGREGAR CORTINA AL CARRITO
 function agregarAlCarrito(indice){
     arrayStorage=JSON.parse(sessionStorage.getItem('Cortinas'))
+    arrayCarrito=JSON.parse(localStorage.getItem('Carrito'))
     arrayCarrito.push(arrayStorage[indice])
     localStorage.setItem('Carrito', JSON.stringify(arrayCarrito))
     traerNumero()
@@ -245,7 +238,7 @@ iconoCarrito.addEventListener('click', ()=>{
     if (carritoStorage.length==0){
         divCarrito.innerHTML=`<h2>Carrito Vacío</h2>`
     }else{
-        mostrarCortinasCarrito()
+        mostrarCortinasCarrito(carritoStorage)
     }
 })
 
@@ -253,6 +246,7 @@ iconoCarrito.addEventListener('click', ()=>{
 function mostrarCortinasCarrito(){
     carritoStorage=JSON.parse(localStorage.getItem('Carrito'))
     divCarrito.innerHTML= ""
+    
     carritoStorage.forEach((cortina, indice) =>{
         //IMAGENES DE LA CARD SEGUN EL TIPO DE CORTINA
         let fotoCortina = " "
@@ -274,8 +268,8 @@ function mostrarCortinasCarrito(){
                         <p class="my-0">Tipo de Tela: ${cortina.tipoTela}</p>
                         <p class="my-0">Ancho: ${cortina.ancho}cm</p>
                         <p class="my-0">Alto: ${cortina.alto}cm</p>
-                        <p class="my-o">Cantidad: <span id="cantidad" class="ms-2">${cortina.cantidad}</span></p>
-                        <h4>Costo: $<spam id="costo">${cortina.presupuesto}</spam></h4>
+                        <p class="my-o">Cantidad: <span id="cantidad${indice}" class="ms-2">${cortina.cantidad}</span></p>
+                        <h4>Costo: $<spam id="costo${indice}">${cortina.presupuesto}</spam></h4>
                         <button class="btn btn-secondary" id="sumar${indice}">+</button>
                         <button class="btn btn-secondary" id="restar${indice}">-</button>
                         <button class="btn btn-danger my-1"><i class="fas fa-trash-alt"></i></button>
@@ -283,27 +277,42 @@ function mostrarCortinasCarrito(){
                 </div>             
         `
 
+         let total = 0
+                let costoAux = document.getElementById('idCostoTotal')
+                carritoStorage.forEach(cortina =>{
+                    total += cortina.presupuesto
+                })
+                costoAux.innerHTML=total
+        localStorage.setItem('Carrito', JSON.stringify(carritoStorage))
 
     })
-    costoTotalCarrito(carritoStorage)
+    //costoTotalCarrito(carritoStorage)
     eliminarCortinaCarrito(carritoStorage)
     vaciarCarrito(carritoStorage)
     finalizarCompra(carritoStorage)
-    sumarCortina(carritoStorage)
-    restarCortina(carritoStorage)
+    sumarYRestarCortina(carritoStorage)
 }
 
 
 //FUNCION ELIMINAR LA CORTINA DEL CARRITO
-function eliminarCortinaCarrito (carritoStorage){
+function eliminarCortinaCarrito (){
+    carritoStorage=JSON.parse(localStorage.getItem('Carrito'))
     carritoStorage.forEach((cortina, indice)=>{
         const botonEliminarDelCarrito = document.getElementById(`cortinaCarrito${indice}`).lastElementChild.lastElementChild
         botonEliminarDelCarrito.addEventListener('click', () => {
             document.getElementById(`cortinaCarrito${indice}`).remove()
-            arrayCarrito.splice(indice, 1)  
-            localStorage.setItem('Carrito', JSON.stringify(arrayCarrito)) 
-            costoTotalCarrito() 
-            if (arrayCarrito.length==0){
+            carritoStorage.splice(indice, 1)  
+
+            let total = 0
+                let costoAux = document.getElementById('idCostoTotal')
+                carritoStorage.forEach(cortina =>{
+                    total += cortina.presupuesto
+                })
+                costoAux.innerHTML=total
+
+            let auxiliar = localStorage.setItem('Carrito', JSON.stringify(carritoStorage)) 
+            //costoTotalCarrito(carritoStorage) 
+            if (carritoStorage.length==0){
                 divCarrito.innerHTML=`<h2>Carrito Vacío</h2>`
             }
             traerNumero()
@@ -312,14 +321,23 @@ function eliminarCortinaCarrito (carritoStorage){
 }
 
 //FUNCION VACIAR EL CARRITO
-function vaciarCarrito (carritoStorage){
+function vaciarCarrito (){
+    carritoStorage=JSON.parse(localStorage.getItem('Carrito'))
     carritoStorage.forEach((cortina, indice)=>{
         vaciarElCarrito.addEventListener('click', () => {
             document.getElementById(`cortinaCarrito${indice}`).remove()
-            arrayCarrito.splice(0, arrayCarrito.length)
-            localStorage.setItem('Carrito', JSON.stringify(arrayCarrito))
-            costoTotalCarrito()
-            if (arrayCarrito.length==0){
+            carritoStorage.splice(0, carritoStorage.length)
+
+            let total = 0
+                let costoAux = document.getElementById('idCostoTotal')
+                carritoStorage.forEach(cortina =>{
+                    total += cortina.presupuesto
+                })
+                costoAux.innerHTML=total
+
+            let auxiliar=localStorage.setItem('Carrito', JSON.stringify(carritoStorage))
+            //costoTotalCarrito(carritoStorage)
+            if (carritoStorage.length==0){
                 divCarrito.innerHTML=`<h2>Carrito Vacío</h2>`
             }
             traerNumero()
@@ -327,11 +345,12 @@ function vaciarCarrito (carritoStorage){
     })
 }
 
+
 //FUNCION FINALIZAR COMPRA + VACIAR CARRITO AL FINANIZAR
 function finalizarCompra (carritoStorage){
     carritoStorage=JSON.parse(localStorage.getItem('Carrito'))
     finalizarLaCompra.addEventListener('click', () => {
-        if (carritoStorage.length==0){
+        if (carritoStorage.length===0){
             Swal.fire('No es posible realizar esta operación. Tu carrito esta vacío')
         }else{
             Swal.fire({
@@ -351,59 +370,70 @@ function finalizarCompra (carritoStorage){
                         }
                         traerNumero()
                     })
-                    Swal.fire('Compra finalizada', '', 'success')
+
+                    let pedido = (Math.random() * 1000).toFixed()
+                    Swal.fire('Compra finalizada', 'Numero de Pedido: ' + pedido , 'success')
                 }    
             })
         }
     })
 }
 
-
 //FUNCION COSTO TOTAL DEL CARRITO -
 function costoTotalCarrito(){
+    let total = 0
     carritoStorage=JSON.parse(localStorage.getItem('Carrito'))
-    const costoTotal = document.getElementById('idCostoTotal')
-    let total = 0;
     carritoStorage.forEach(cortina => {
         total += cortina.presupuesto 
     })
     costoTotal.innerHTML = total
 }
 
-//FUNCION SUMO MISMA CORTINA
-function sumarCortina(){
+//FUNCION SUMO Y RESTO LA MISMA CORTINA
+function sumarYRestarCortina(){
+    carritoStorage=JSON.parse(localStorage.getItem('Carrito'))
+    //console.table(carritoStorage)
     carritoStorage.forEach((cortina, indice)=>{
         const botonSumarCortina = document.getElementById(`sumar${indice}`)
         botonSumarCortina.addEventListener('click', ()=>{
-            let sumaCantidad = (cantidad += cortina.cantidad)
-            document.getElementById('cantidad').innerText=sumaCantidad
-            let incremPresup = cortina.presupuesto * sumaCantidad
-            document.getElementById('costo').innerText=incremPresup
-        })
-        
-    })
-}
+                let sumaCantidad = (cortina.cantidad) + 1
+                cortina.cantidad=sumaCantidad
+                document.getElementById(`cantidad${indice}`).innerText = sumaCantidad
+                let incremPresup = cortina.presupuesto / (sumaCantidad-1)*sumaCantidad
+                cortina.presupuesto=incremPresup
+                document.getElementById(`costo${indice}`).innerText=incremPresup
+                let total = 0
+                let costoAux = document.getElementById('idCostoTotal')
+                carritoStorage.forEach(cortina =>{
+                    total += cortina.presupuesto
+                })
+                costoAux.innerHTML=total
+                let aux = localStorage.setItem('Carrito', JSON.stringify(carritoStorage))
+            })
 
-//FUNCION RESTO MISMA CORTINA
-function restarCortina(){
-    carritoStorage.forEach((cortina, indice)=>{
+
         const botonRestarCortina = document.getElementById(`restar${indice}`)
         botonRestarCortina.addEventListener('click', ()=>{
-            if(cantidad>1){
-                let restaCantidad = (cantidad -=cortina.cantidad)
-                document.getElementById('cantidad').innerText=restaCantidad
-                let restaPresup = cortina.presupuesto * cantidad
-                document.getElementById('costo').innerText=restaPresup
+            if(cortina.cantidad>1){
+                let restaCantidad = (cortina.cantidad) - 1
+                cortina.cantidad=restaCantidad
+                document.getElementById(`cantidad${indice}`).innerText=restaCantidad
+                let restaPresup = cortina.presupuesto / (restaCantidad+1)*restaCantidad
+                cortina.presupuesto = restaPresup
+                document.getElementById(`costo${indice}`).innerText=restaPresup
+                let total = 0
+                let costoAux = document.getElementById('idCostoTotal')
+                carritoStorage.forEach(cortina =>{
+                    total += cortina.presupuesto
+                })
+                costoAux.innerHTML=total
+                let aux = localStorage.setItem('Carrito', JSON.stringify(carritoStorage))
             }
         })
     })
 }
 
-
 //INCORPORO FETCH DE MANERA LOCAL - Cree un archivo .json con productos en promoción.
-const cortinaPromo = document.getElementById('idCortinaPromo')
-const botonPromo = document.getElementById('idBotonPromo')
-
 async function mostrarCortinasEnPromo(){
     const promociones = await fetch('../json/productosPromo.json')
     const promocionesParseadas = await promociones.json()
@@ -433,11 +463,12 @@ botonPromo.addEventListener('click', ()=>{
 })
 
 async function agregarPromoAlCarrito(indice){
+    //arrayStorage=JSON.parse(sessionStorage.getItem('Cortinas'))
     const promociones = await fetch('../json/productosPromo.json')
     const promocionesParseadas = await promociones.json()
     arrayCarrito.push(promocionesParseadas[indice])
     localStorage.setItem('Carrito', JSON.stringify(arrayCarrito))
-    contadorCarrito.innerText=arrayCarrito.length
+    traerNumero()
     Toastify({
         text: "Agregaste LA CORTINA al Carrito",
         duration: 3000,

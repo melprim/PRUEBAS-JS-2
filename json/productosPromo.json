@@ -7,7 +7,8 @@
         "mecanismo":"Manual",
         "ancho": 90,
         "alto": 165,
-        "presupuesto": 10408       
+        "presupuesto": 10408,  
+        "cantidad": 1     
     },
     {
         "img":"2bandasVerticales.png",
@@ -15,9 +16,10 @@
         "tipoTela":"Screen",
         "color":"Beige",
         "mecanismo":"Manual",
-        "ancho": 2000,
+        "ancho": 200,
         "alto": 150,
-        "presupuesto": 37000
+        "presupuesto": 37000,
+        "cantidad": 1
     },
     {
         "img":"3duoNegra.png",
@@ -26,8 +28,9 @@
         "color":"Negro",
         "mecanismo":"Manual",
         "ancho": 130,
-        "alto": 2100,
-        "presupuesto": 30050
+        "alto": 210,
+        "presupuesto": 30050,
+        "cantidad": 1
     },
     {
         "img":"4rollerB.O..png",
@@ -37,6 +40,7 @@
         "mecanismo":"Manual",
         "ancho": 164,
         "alto": 160,
-        "presupuesto": 13200
+        "presupuesto": 13200,
+        "cantidad": 1
     }
 ]
