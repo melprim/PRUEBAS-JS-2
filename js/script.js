@@ -26,7 +26,7 @@ let cortinasTotales = 0
 let arrayCortinas = [];
 let arrayCarrito = [];
 
-//CONSULTO SI EXISTE EL LOCALSTORAGE - aplico OPERADOR TERNARIO
+//CONSULTO SI EXISTE EL SESSIONSTORAGE 
 let arrayStorage
 if(JSON.parse(sessionStorage.getItem('Cortinas'))){
     arrayStorage = JSON.parse(sessionStorage.getItem('Cortinas'))
@@ -35,6 +35,7 @@ if(JSON.parse(sessionStorage.getItem('Cortinas'))){
     arrayStorage = JSON.parse(sessionStorage.getItem('Cortinas'))
 }
 
+//CONSULTO SI EXISTE EL SESSIONSTORAGE
 let carritoStorage
 if(JSON.parse(localStorage.getItem('Carrito'))){
     carritoStorage = JSON.parse(localStorage.getItem('Carrito'))
@@ -71,7 +72,6 @@ form.addEventListener('submit', (e)=>{
     let borrar2 = document.getElementById('telaSeleccionada').innerHTML = ""
     let borrar3 = document.getElementById('colorSeleccionado').innerHTML = ""
     let borrar4 = document.getElementById('mecanismoSeleccionado').innerHTML = ""
-
 
     //Creo objetos y agrego al array
     arrayCortinas=JSON.parse(sessionStorage.getItem('Cortinas'))
@@ -142,7 +142,6 @@ function eliminarCortinaArmada () {
     })
     
 }
-
 
 //EVENTOS CHANGE EN LOS SELECT DEL HTML
     //Evento para tipo de cortina
@@ -286,7 +285,6 @@ function mostrarCortinasCarrito(){
         localStorage.setItem('Carrito', JSON.stringify(carritoStorage))
 
     })
-    //costoTotalCarrito(carritoStorage)
     eliminarCortinaCarrito(carritoStorage)
     vaciarCarrito(carritoStorage)
     finalizarCompra(carritoStorage)
@@ -302,7 +300,6 @@ function eliminarCortinaCarrito (){
         botonEliminarDelCarrito.addEventListener('click', () => {
             document.getElementById(`cortinaCarrito${indice}`).remove()
             carritoStorage.splice(indice, 1)  
-
             let total = 0
                 let costoAux = document.getElementById('idCostoTotal')
                 carritoStorage.forEach(cortina =>{
@@ -311,7 +308,6 @@ function eliminarCortinaCarrito (){
                 costoAux.innerHTML=total
 
             let auxiliar = localStorage.setItem('Carrito', JSON.stringify(carritoStorage)) 
-            //costoTotalCarrito(carritoStorage) 
             if (carritoStorage.length==0){
                 divCarrito.innerHTML=`<h2>Carrito Vacío</h2>`
             }
@@ -327,7 +323,6 @@ function vaciarCarrito (){
         vaciarElCarrito.addEventListener('click', () => {
             document.getElementById(`cortinaCarrito${indice}`).remove()
             carritoStorage.splice(0, carritoStorage.length)
-
             let total = 0
                 let costoAux = document.getElementById('idCostoTotal')
                 carritoStorage.forEach(cortina =>{
@@ -336,7 +331,6 @@ function vaciarCarrito (){
                 costoAux.innerHTML=total
 
             let auxiliar=localStorage.setItem('Carrito', JSON.stringify(carritoStorage))
-            //costoTotalCarrito(carritoStorage)
             if (carritoStorage.length==0){
                 divCarrito.innerHTML=`<h2>Carrito Vacío</h2>`
             }
@@ -379,7 +373,7 @@ function finalizarCompra (carritoStorage){
     })
 }
 
-//FUNCION COSTO TOTAL DEL CARRITO -
+//FUNCION COSTO TOTAL DEL CARRITO 
 function costoTotalCarrito(){
     let total = 0
     carritoStorage=JSON.parse(localStorage.getItem('Carrito'))
@@ -392,7 +386,6 @@ function costoTotalCarrito(){
 //FUNCION SUMO Y RESTO LA MISMA CORTINA
 function sumarYRestarCortina(){
     carritoStorage=JSON.parse(localStorage.getItem('Carrito'))
-    //console.table(carritoStorage)
     carritoStorage.forEach((cortina, indice)=>{
         const botonSumarCortina = document.getElementById(`sumar${indice}`)
         botonSumarCortina.addEventListener('click', ()=>{
@@ -463,7 +456,6 @@ botonPromo.addEventListener('click', ()=>{
 })
 
 async function agregarPromoAlCarrito(indice){
-    //arrayStorage=JSON.parse(sessionStorage.getItem('Cortinas'))
     const promociones = await fetch('../json/productosPromo.json')
     const promocionesParseadas = await promociones.json()
     arrayCarrito.push(promocionesParseadas[indice])
@@ -484,3 +476,19 @@ async function agregarPromoAlCarrito(indice){
     }).showToast();
 }
 
+//FUNCION EN FORMLARIO DE ENVIO DE CONSULTA - EN HTML
+function envioConsulta (){
+    const formEnviarConsulta = document.getElementById('idFormEnviarConsulta')
+    formEnviarConsulta.addEventListener('submit', (e)=>{
+    e.preventDefault()
+    formEnviarConsulta.reset()
+        Swal.fire({
+        position: 'button',
+        icon: 'success',
+        title: 'Su consulta ha sido enviada. Muchas Gracias',
+        showConfirmButton: false,
+        timer: 1750
+        })
+        
+    })
+}

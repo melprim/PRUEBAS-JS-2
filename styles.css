@@ -168,11 +168,11 @@ h1{
     padding: 1rem 2rem;
     background-color: #DCD4C9;
     font-size: 30px;
-    color: black;
 }
 
 .fondo_boton{
-    background-color: #DCD4C9;
+    background-color: #000000;
+    color: white;
     font-size: 30px;
     border-radius: 10px;
 }
